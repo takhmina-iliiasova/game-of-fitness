@@ -138,6 +138,10 @@ cleaned_probability = [
 
 print(cleaned_probability)
 
+# print mean squared error by omitting nan values between cleaned_probability and average_empty_ratios
+mse = np.nanmean((np.array(cleaned_probability) - np.array(average_empty_ratios)) ** 2)
+print(f"Mean Squared Error between theoretical and simulation probabilities: {mse} \n")  
+
 # Plot the results
 #plt.figure(figsize=(12, 8))
 
