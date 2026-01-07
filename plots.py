@@ -160,67 +160,16 @@ plt.show()
 
 
 #-------------------------------------------------------------------------------------#
-# Plot # 3
-# Logistic fit to survived organisms over time
-
-
-# Load the JSON data
-with open('simulation_data.json', 'r') as f:
-    data = json.load(f)
-
-# Extract live counts and compute the average survival curve
-all_live_counts = data['live_counts']
-num_runs = len(all_live_counts)
-max_timesteps = max(len(run) for run in all_live_counts)
-result = np.zeros(max_timesteps)
-
-for run in all_live_counts:
-    padded_run = np.pad(run, (0, max_timesteps - len(run)), 'constant', constant_values=run[-1])
-    result += padded_run
-
-average_live_counts = result / num_runs
-
-# Normalize the result
-normResult = average_live_counts / (average_live_counts[-1])  # Avoid division by zero
-
-# Find inflection point
-halfway = np.sum(normResult < 0.5)
-if halfway == 0 or halfway >= len(normResult):
-    halfway = len(normResult) // 2  # Fallback to midpoint if invalid
-
-slope = normResult[halfway] - normResult[halfway - 1]
-t0 = (0.5 - normResult[halfway - 1]) / (slope) + (halfway - 1)  # Avoid div by zero
-
-kvalue = 4* slope  # Adjust multiplier for better fit
-
-# Generate logistic curve
-t = np.arange(max_timesteps)
-f = 1 / (1 + np.exp(-kvalue * (t - t0)))  # Prevent overflow
-
-# Plot results
-plt.plot(normResult, label="Normalized Survival Data", color="red")
-plt.plot(f, label="Logistic Fit", linestyle="--", color="blue")
-
-plt.xlabel('Time (iterations)')
-plt.ylabel('Normalized number of surviving organisms')
-plt.title('Logistic Fit to Survival Data')
-plt.legend()
-plt.grid(True)
-plt.show()
-
-
-
-
-
-
-
-#-------------------------------------------------------------------------------------#
 #plot # 4
 # fit for survived organisms over time - built in function 
 
 # Logistic function definition
 def logistic(x, L, k, t_0):
     return L / (1 + np.exp(-k * (x - t_0)))
+
+# Logistic function definition - normalised version
+def logistic_norm(t, r, t_0):
+    return 1 / (1 + np.exp(-r * (t - t_0)))
 
 # Load the JSON data
 with open('simulation_data.json', 'r') as f:
@@ -249,34 +198,38 @@ for i, run in enumerate(all_live_counts):
     result += padded_run
 
     # Plot individual runs in gray
-    plt.plot(padded_run, linestyle='', marker='.', markersize=1, color='#777777')
+    # plt.plot(padded_run, linestyle='', marker='.', markersize=1, color='#777777')
 
 # Compute the average live count by dividing by the number of runs
 average_live_counts = result / num_runs
+norm_average_live_counts = average_live_counts / max(average_live_counts) # normalised version
 
 # Initial guesses for the logistic fit parameters
-L_guess = max(average_live_counts) * 1.2  # A bit larger than the maximum value in the data
-k_guess = 0.1  # A small growth rate
+K_guess = max(average_live_counts) * 1.2  # A bit larger than the maximum value in the data
+r_guess = 0.1  # A small growth rate
 t_0_guess = max_timesteps / 2  # Midpoint of time steps
 
 # Perform logistic curve fitting with initial guesses
 time = np.arange(max_timesteps)
-params, _ = curve_fit(logistic, time, average_live_counts, p0=[L_guess, k_guess, t_0_guess], maxfev=10000)
+# params, _ = curve_fit(logistic, time, average_live_counts, p0=[K_guess, r_guess, t_0_guess], maxfev=10000)
+params, _ = curve_fit(logistic_norm, time, norm_average_live_counts, p0=[r_guess, t_0_guess], maxfev=10000) # normalised version
+
+# Print fitted parameters and mean squared error
+print("NON-LINEAR LEAST SQUARES FITTING: \n")
+fitted_values = logistic_norm(time, *params)
+mse = np.mean((norm_average_live_counts - fitted_values) ** 2)
+print(f"Fitted parameters: r = {params[0]}, t0 = {params[1]}, MSE = {mse}")
 
 # Plot the averaged result in red
-plt.plot(average_live_counts, color='r', label=f'Average')
+# plt.plot(average_live_counts, color='r', label=f'Average')
+plt.plot(norm_average_live_counts, color='r', label=f'Normalised average $S_n$')
 
 # Plot the logistic fit in blue
-plt.plot(time, logistic(time, *params), 'b--', label=f'Logistic Fit: L={params[0]:.2f}, k={params[1]:.2f}, t_0={params[2]:.2f}')
+plt.plot(time, logistic_norm(time, *params), 'b--', label=f'Logistic Fit')
 
 # Label the plot
-plt.xlabel('Time (iterations)')
-plt.ylabel('Number of surviving organisms')
-plt.title('Surviving Organisms Over Time (Averaged Across Runs)')
+plt.xlabel('Time (n)')
+plt.ylabel('Normalised population')
 plt.legend()
 plt.grid(True)
 plt.show()
-
-
-
-
