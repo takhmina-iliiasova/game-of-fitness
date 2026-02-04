@@ -45,87 +45,30 @@ for i, (run, depleted_run) in enumerate(zip(all_live_counts, all_depleted_counts
     depleted_result += padded_depleted
     # Plot individual runs in gray
     plt.plot(padded_run, linestyle='', marker='.', markersize=1, color='#777777')
-
+  
 # Compute the average live count by dividing by the number of runs
 average_live_counts = result / num_runs
 average_depleted_counts = depleted_result / num_runs
 
+# Get the last value from the averaged results
+last_timestep_value = average_live_counts[-1]
+
+# Print the value to the console
+print(f"The value of the plot at the last timestep is: {last_timestep_value}")
+
 # Plot the averaged result in red
 # plt.plot(average_live_counts, color='r', label='Average')
-plt.plot(average_live_counts, color='r', label=f'Average')
-#plt.savefig("figure.png", dpi=300, bbox_inches="tight") #for good quality
+plt.plot(average_live_counts, color='r', label=f'Average $S_n$')
 
-# Label the plot
-plt.xlabel('Time (iterations)')
-plt.ylabel('Number of surviving organisms')
-plt.title('Surviving Organisms Over Time (Averaged Across Runs)')
+
+# Label the plotS
+plt.xlabel('Time ($n$)')
+plt.ylabel('Population ($S_n$)')
+#plt.title('Surviving Organisms Over Time (Averaged Across Runs)')
 plt.legend()
 plt.grid(True)
 plt.show()
-
-
 # -----------Figure 8 b -----------
-
-# Load data from the JSON file
-with open(f'{DATA_FOLDER}/plots-data-a0-l19-fig5.json', 'r') as f:
-    data = json.load(f)
-
-# Extract live counts
-live_counts = data['live_counts']
-
-# Determine the maximum number of time steps across all runs
-max_time_steps = len(average_live_counts)
-
-#change this
-#average_empty_ratios = (NO_TILES - average_live_counts )/NO_TILES 
-# Calculate empty cell ratio considering depleted tiles
-average_empty_ratios = (NO_TILES - average_live_counts - average_depleted_counts) / (NO_TILES - average_depleted_counts)
-
-# Initialize lists to store probability values for each time step
-probability_values = [[] for _ in range(max_time_steps)]
-
-# Calculate probability values
-for t in range(len(average_live_counts) - 1):
-    current_population = average_live_counts[t]
-    next_population = average_live_counts[t + 1]
-
-    if current_population > 0:  # Avoid division by zero
-        ratio = next_population / current_population
-        #eq 13 from Overleaf:
-        probability = 0.5 + (0.5 * np.sqrt(ratio - 1))
-        
-        probability_values[t].append(probability)
-
-cleaned_probability = [
-    # float(x[0]) for x in probability_values if isinstance(x, list) and x and not np.isnan(x[0])
-    float(x[0]) if isinstance(x, list) and x else np.nan
-    for x in probability_values
-]
-
-print(cleaned_probability)
-
-# print mean squared error by omitting nan values between cleaned_probability and average_empty_ratios
-mse = np.nanmean((np.array(cleaned_probability) - np.array(average_empty_ratios)) ** 2)
-print(f"Mean Squared Error between theoretical and simulation probabilities: {mse} \n")  
-
-
-# Plot average probabilities from the first valid p(n) <= 1
-plt.plot(range(len(cleaned_probability)), cleaned_probability, label='p(n) theoretical', marker='o', linestyle='-', color='b')
-
-plt.plot(range(len(average_empty_ratios)), average_empty_ratios, label='p(n) simulation', marker='o', linestyle='--', color='orange')
-
-plt.xlabel('Time Step')
-plt.ylabel('Probability')
-
-plt.legend()
-plt.grid(True)
-plt.show()
-
-
-
-
-
-# -----------Figure 8 c -----------
 
 # Logistic function definition
 def logistic(x, L, k, t_0):
@@ -192,8 +135,77 @@ plt.plot(norm_average_live_counts, color='r', label=f'Normalised average $S_n$')
 plt.plot(time, logistic_norm(time, *params), 'b--', label=f'Logistic Fit')
 
 # Label the plot
-plt.xlabel('Time (n)')
-plt.ylabel('Normalised population')
+plt.xlabel('Time ($n$)')
+plt.ylabel('Normalized population')
 plt.legend()
 plt.grid(True)
 plt.show()
+
+
+
+# -----------Figure 8 c -----------
+# Load data from the JSON file
+with open(f'{DATA_FOLDER}/plots-data-a0-l19-fig5.json', 'r') as f:
+    data = json.load(f)
+
+#-------------------------------------------------------------------------------------#
+# Plot for Figure 5c: p(n) theoretical VS p(n) simulation
+
+\
+
+# Extract live counts
+live_counts = data['live_counts']
+
+
+# Determine the maximum number of time steps across all runs
+max_time_steps = len(average_live_counts)
+
+# Calculate empty cell ratio considering depleted tiles
+average_empty_ratios = (NO_TILES - average_live_counts - average_depleted_counts) / (NO_TILES - average_depleted_counts)
+
+# Initialize lists to store probability values for each time step
+probability_values = [[] for _ in range(max_time_steps)]
+
+# Calculate probability values
+for t in range(len(average_live_counts) - 1):
+    current_population = average_live_counts[t]
+    next_population = average_live_counts[t + 1]
+
+    if current_population > 0:  # Avoid division by zero
+        ratio = next_population / current_population
+        #eq 13 from Overleaf:
+        probability = 0.5 + (0.5 * np.sqrt(ratio - 1))
+        
+        probability_values[t].append(probability)
+
+cleaned_probability = [
+    # float(x[0]) for x in probability_values if isinstance(x, list) and x and not np.isnan(x[0])
+    float(x[0]) if isinstance(x, list) and x else np.nan
+    for x in probability_values
+]
+
+print(cleaned_probability)
+
+# print mean squared error by omitting nan values between cleaned_probability and average_empty_ratios
+mse = np.nanmean((np.array(cleaned_probability) - np.array(average_empty_ratios)) ** 2)
+print(f"Mean Squared Error between theoretical and simulation probabilities: {mse} \n")  
+
+# Plot the results
+#plt.figure(figsize=(12, 8))
+
+# Plot average probabilities from the first valid p(n) <= 1
+plt.plot(range(len(cleaned_probability)), cleaned_probability, label='$p_n$ (theoretical)', marker='o', linestyle='-', color='b')
+
+plt.plot(range(len(average_empty_ratios)), average_empty_ratios, label='$p_n$ (simulation)', marker='x', linestyle='--', color='orange')
+
+plt.xlabel('Time ($n$)')
+plt.ylabel('Success probability ($p_n$)')
+
+plt.legend()
+plt.grid(True)
+plt.show()
+
+
+
+
+
