@@ -20,20 +20,20 @@ pygame.init()
 
 
 # REGION simulation graphics parameters, configurable
-FPS = 0.4
+FPS = 10
 TIME_STEPS = 100 
-NUM_RUNS = 1
+NUM_RUNS = 10000
 # END REGION
 
 
 # REGION reproduction parameters, configurable
 # Moore neighbourhood radius ρ (i.e in level = 1, organism has 8 neighbors; level = 2: organism has 24 neighbours)
 # Maximum level is level = 19 to allow organisms in the corners to reproduce within the whole grid. 
-level = 19
+level = 15
 
 # Information parameter α (i.e. when tile_selection_bias = 0: pure random selection;
 # 1: perfect avoidance of occupied tiles; 0.5 - equal chance of perfect avoidance and random selection)
-tile_selection_bias = 0 
+tile_selection_bias = 0
 # END REGION
 
 
@@ -188,7 +188,7 @@ def optimalKelly():
         organisms.update(new_organisms)
         live_counts.append(len(organisms))
 
-        pygame_draw(organisms,depleted_tiles)  # comment out this line if you want to disable graphical interface
+        #pygame_draw(organisms,depleted_tiles)  # comment out this line if you want to disable graphical interface
 
         depleted_counts.append(len(depleted_tiles))  # Record number of depleted tiles
 
