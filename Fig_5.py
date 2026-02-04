@@ -3,7 +3,7 @@ import json
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 
-# -----------Figure 8 a -----------
+# -----------Figure 5 a -----------
 WIDTH, HEIGHT = 800, 800
 TILE_SIZE = 40 # 20 x 20 tiles = 400 tiles in total
 GRID_WIDTH = WIDTH // TILE_SIZE
@@ -32,7 +32,7 @@ depleted_result = np.zeros(max_timesteps)
 
 # Iterate over each run and add the counts to the cumulative result
 for i, (run, depleted_run) in enumerate(zip(all_live_counts, all_depleted_counts)):
-    # Pad the run with last value if it has fewer time steps
+    # Pad the run with lastalue if it has fewer time steps
     if len(run) < max_timesteps:
         padded_run = np.pad(run, (0, max_timesteps - len(run)), 'constant', constant_values=run[-1])
         padded_depleted = np.pad(depleted_run, (0, max_timesteps - len(depleted_run)), 'constant', constant_values=depleted_run[-1])
@@ -68,7 +68,7 @@ plt.ylabel('Population ($S_n$)')
 plt.legend()
 plt.grid(True)
 plt.show()
-# -----------Figure 8 b -----------
+# -----------Figure 5 b -----------
 
 # Logistic function definition
 def logistic(x, L, k, t_0):
@@ -143,15 +143,11 @@ plt.show()
 
 
 
-# -----------Figure 8 c -----------
+# -----------Figure 5 c -----------
 # Load data from the JSON file
 with open(f'{DATA_FOLDER}/plots-data-a0-l19-fig5.json', 'r') as f:
     data = json.load(f)
 
-#-------------------------------------------------------------------------------------#
-# Plot for Figure 5c: p(n) theoretical VS p(n) simulation
-
-\
 
 # Extract live counts
 live_counts = data['live_counts']
