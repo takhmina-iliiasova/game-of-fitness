@@ -12,7 +12,7 @@ NO_TILES = GRID_WIDTH * GRID_HEIGHT
 DATA_FOLDER = 'json_files'
 
 # Load the JSON data
-with open(f'{DATA_FOLDER}/plots-data-a0-l19-fig5.json', 'r') as f:
+with open(f'{DATA_FOLDER}/simulation_data.json', 'r') as f:
     data = json.load(f)
 
 # Extract the live counts from the JSON data
@@ -79,7 +79,7 @@ def logistic_norm(t, r, t_0):
     return 1 / (1 + np.exp(-r * (t - t_0)))
 
 # Load the JSON data
-with open(f'{DATA_FOLDER}/plots-data-a0-l19-fig5.json', 'r') as f:
+with open(f'{DATA_FOLDER}/simulation_data.json', 'r') as f:
     data = json.load(f)
 
 # Extract the live counts from the JSON data
@@ -145,7 +145,7 @@ plt.show()
 
 # -----------Figure 5 c -----------
 # Load data from the JSON file
-with open(f'{DATA_FOLDER}/plots-data-a0-l19-fig5.json', 'r') as f:
+with open(f'{DATA_FOLDER}/simulation_data.json', 'r') as f:
     data = json.load(f)
 
 
