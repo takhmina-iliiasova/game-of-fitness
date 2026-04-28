@@ -1,7 +1,8 @@
 # Game of Fitness
 
-Simulation code and data analysis for the paper:
-**"Game of Fitness: Kelly betting in a limited environment leads to logistic growth"**
+This simulation is part of the research paper **"Bet-hedging via Kelly betting in a limited environment leads to logistic growth in the Game of Fitness"**, Scientific Reports, 2026, by Fatih Gulec, Takhmina Iliiasova, Nigel Wallbridge, and Andrew W. Eckford. 
+
+📝 **Link to the paper**: https://www.nature.com/articles/s41598-026-47388-8
 
 🌐 **Live Demo:** [www.gameoffitness.net](https://www.gameoffitness.net/)
 
